@@ -18,8 +18,8 @@ def detectRapportDeCadre(image, size) :
     hauteur = pdb.gimp_image_height(image)
     largeur = pdb.gimp_image_width(image)
 
-    #hauteur la plus grande
-    if (hauteur > largeur):
+    #on prend le plus petit coté
+    if (hauteur < largeur):
         return hauteur / size
     else :
         #largeur la plus grande ou les cotes sont identiques
@@ -76,21 +76,24 @@ def picture_square_sheet(size, repertoire) :
     width,height = CalcPaperSize(3, dpi)
     sheetimg = gimp.Image(width,height,RGB)
     sheetimg.resolution = (float(dpi), float(dpi))
-    pdb.gimp_layer_new(sheetimg, width, height, 0, 'layer', 100, 0)
-    # Create a new layer (-1 for the layer means create a new layer)
-    layer = pdb.gimp_layer_new(sheetimg, size, size, 0, 'layer', 100, 0)
-    #ajoute le layer
+
+    # Cree un nouveau layer sans fond
+    layer = pdb.gimp_layer_new(sheetimg, width, height, 1, 'layer', 100, 0)
+    #ajoute le layer à l'image
     sheetimg.add_layer(layer,0)    
 
     lesImages = imagesDuDossier(repertoire)
-    posXImageSuivante = 0
+    #coordonnees correspondant a la position en haut a gauche
+    posXImageSuivante = -500
+    posYImageSuivante = -700
+    nbImageSurLigne = 0
 
     for nomImage in lesImages :
-
+        nbImageSurLigne = nbImageSurLigne+1
         #nom de la premiere image
-        #nomImage = lesImages[0]
         #charge l'image
-        image = pdb.gimp_file_load(repertoire+'/'+nomImage, repertoire+'/'+nomImage)
+        cheminImage = repertoire+'/'+nomImage
+        image = pdb.gimp_file_load(cheminImage, cheminImage)
 
         hauteur = pdb.gimp_image_height(image)
         largeur = pdb.gimp_image_width(image)
@@ -110,16 +113,21 @@ def picture_square_sheet(size, repertoire) :
         #copie la selection
         selection = pdb.gimp_edit_paste(layer,True)
 
-        selection.translate(posXImageSuivante,0)
+        selection.translate(posXImageSuivante, posYImageSuivante)
         pdb.gimp_floating_sel_anchor(selection)
-        #pdb.gimp_selection_invert(image)
+
         #retire l'image de la memoire
         gimp.delete(image)
-        posXImageSuivante = 200
+        posXImageSuivante = posXImageSuivante + 200
+
+        if (nbImageSurLigne == 6) :
+            nbImageSurLigne = 0
+            posYImageSuivante = posYImageSuivante + 200
+            posXImageSuivante = -500
 
     # Create a new image window
     gimp.Display(sheetimg)
-    # Show the new image window
+    # Affiche l'image
     gimp.displays_flush()
 
 register(
@@ -139,3 +147,4 @@ register(
     picture_square_sheet, menu="<Image>/File/Create")
 
 main()
+
