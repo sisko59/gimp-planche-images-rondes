@@ -18,7 +18,7 @@ def detectRapportDeCadre(image, size) :
     hauteur = pdb.gimp_image_height(image)
     largeur = pdb.gimp_image_width(image)
 
-    #on prend le plus petit coté
+    #hauteur la plus grande
     if (hauteur < largeur):
         return hauteur / size
     else :
@@ -68,8 +68,6 @@ def CalcPaperSize(ContactSize, dpi):
 def picture_square_sheet(size, repertoire) :
     #dans la console gimp pour image courrante
     #image = gimp.image_list()[0]
-    #repertoire avec image pour tester
-    repertoire = '/home/francis/Images'
     dpi = 150
 
     #taille feuille creer
@@ -79,7 +77,7 @@ def picture_square_sheet(size, repertoire) :
 
     # Cree un nouveau layer sans fond
     layer = pdb.gimp_layer_new(sheetimg, width, height, 1, 'layer', 100, 0)
-    #ajoute le layer à l'image
+    #ajoute le layer a l image
     sheetimg.add_layer(layer,0)    
 
     lesImages = imagesDuDossier(repertoire)
@@ -91,6 +89,7 @@ def picture_square_sheet(size, repertoire) :
     for nomImage in lesImages :
         nbImageSurLigne = nbImageSurLigne+1
         #nom de la premiere image
+        #nomImage = lesImages[0]
         #charge l'image
         cheminImage = repertoire+'/'+nomImage
         image = pdb.gimp_file_load(cheminImage, cheminImage)
@@ -127,7 +126,7 @@ def picture_square_sheet(size, repertoire) :
 
     # Create a new image window
     gimp.Display(sheetimg)
-    # Affiche l'image
+    # Affiche l image
     gimp.displays_flush()
 
 register(
@@ -147,4 +146,3 @@ register(
     picture_square_sheet, menu="<Image>/File/Create")
 
 main()
-
