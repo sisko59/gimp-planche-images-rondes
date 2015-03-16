@@ -1,0 +1,1 @@
+génère une planche à partir d'une liste d'image.
